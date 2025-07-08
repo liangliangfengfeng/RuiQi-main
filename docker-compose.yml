@@ -29,7 +29,7 @@ services:
     depends_on:
       - mongodb
     environment:
-      DB_URI: mongodb://192.168.31.55:27018 # 请替换为您的实际密码
+      DB_URI: mongodb://waf-demo-mongodb:27017 # 请替换为您的实际密码
       JWT_SECRET: ffffffffffffffffffffffffffffff
       IS_PRODUCTION: "false"
       VITE_API_BASE_URL: http://localhost:2333/api/v1
