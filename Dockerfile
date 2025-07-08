@@ -14,6 +14,14 @@ RUN pnpm build
 
 # 阶段2: 构建Go后端
 FROM golang:1.24.1-alpine AS backend-builder
+
+# ✅ 加入 GOPROXY 镜像源（关键）
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64 \
+    GOPROXY=https://goproxy.cn,direct
+
 # 设置Go环境变量
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
