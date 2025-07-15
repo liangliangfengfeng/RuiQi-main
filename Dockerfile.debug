@@ -1,0 +1,32 @@
+# ================= 阶段3: 运行镜像 =================
+FROM haproxy:3.0.10
+
+USER root
+
+RUN apt-get update && \
+    apt-get install -y bash libc6 && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# ✅ 设置环境变量（等同于原本 .env.debug 内容）
+ENV DB_URI=mongodb://10.1.173.165:27018
+ENV JWT_SECRET=ffffffffffffffffffffffffffffff
+ENV IS_K8S=false
+ENV IS_PRODUCTION=false
+ENV DISENABLE_WEB=false
+ENV WEB_PATH=/Users/liangfeng/GolandProjects/RuiQi-main/web
+ENV GIN_MODE=debug
+ENV PORT=8080
+
+# 拷贝二进制和调试器
+COPY --from=backend-debug /usr/local/bin/dlv /usr/local/bin/dlv
+COPY --from=backend-debug /build/ruiqi-waf /app/ruiqi-waf
+COPY --from=backend-debug /build/server/docs /app/docs
+COPY --from=backend-debug /build/geo-ip /home/ruiqi/ruiqi-waf/geo-ip
+
+EXPOSE 40000
+EXPOSE 8080
+
+# ✅ 直接启动 Delve，不再依赖 .env.debug 文件
+CMD ["dlv", "exec", "/app/ruiqi-waf", "--headless", "--listen=:40000", "--api-version=2", "--accept-multiclient", "--log"]
